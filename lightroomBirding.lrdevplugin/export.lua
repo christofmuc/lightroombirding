@@ -7,7 +7,7 @@ local LrApplication = import'LrApplication'
 local LrTasks = import'LrTasks'
 local LrDate = import'LrDate'
 
-require'photogenityUtil'
+require'alpenglowUtil'
 require'PluginInit'
 
 --

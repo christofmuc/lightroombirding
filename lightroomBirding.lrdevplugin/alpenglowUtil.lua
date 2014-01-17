@@ -4,7 +4,7 @@ util = {}
 function util.logDebug(name, value)
     if type(value) == 'table' then
         for key, row in pairs(value) do
-            logDebug(name.."/"..key, row)
+            util.logDebug(name.."/"..key, row)
         end
     else
         logger:debug(name, value)
