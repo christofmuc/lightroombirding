@@ -5,20 +5,23 @@ return {
             title = LOC"$$$/LightroomBirding/Fields/CommonName=Common Name",
             dataType = 'string',
             searchable = true,
-            browsable = true
+            browsable = true,
+            version = 2
         },
         {
             id = 'scientificName',
             title = LOC"$$$/LightroomBirding/Fields/ScientificName=Scientific Name",
             dataType = 'string',
             searchable = true,
-            browsable = true
+            browsable = true,
+            version = 2
         },
         {
             id = 'speciesComments',
             title = LOC"$$$/LightroomBirding/Fields/SpeciesComments=Species Comments",
             dataType = 'string',
-            searchable = true
+            searchable = true,
+            version = 2
         },
         {
             id = 'speciesCount',
@@ -42,7 +45,8 @@ return {
                 { value = 'Traveling', title = 'Traveling' },
                 { value = 'Area', title = 'Area' }
             },
-            searchable = false
+            searchable = false,
+            version = 2
         },
         {
             id = 'numberOfObservers',
@@ -79,7 +83,8 @@ return {
             id = 'comments',
             title = LOC"$$$/LightroomBirding/Fields/Comments=Checklist comments",
             dataType = 'string',
-            searchable = true
+            searchable = true,
+            version = 2
         },
     },
 schemaVersion = 1,

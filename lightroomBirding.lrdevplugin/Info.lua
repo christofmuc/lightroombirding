@@ -6,7 +6,13 @@ return {
     LrMetadataTagsetFactory = 'MetadataTagset.lua',
     LrInitPlugin = 'PluginInit.lua',
     LrExportMenuItems = {
-    title = "Export birding info to eBird",
-    file = "export.lua",
+        {
+            title = LOC"$$$/LightroomBirding/SpeciesFromKeywords=Determine Species from Keywords",
+            file = "lookup.lua",
+        },
+        {
+            title = LOC"$$$/LightroomBirding/ExportToEbird=Export birding info to eBird",
+            file = "export.lua",
+        }
     },
 }
