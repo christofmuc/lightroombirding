@@ -1,10 +1,24 @@
 return {
     metadataFieldsForPhotos = {
         {
+            id = 'commonName',
+            title = LOC"$$$/LightroomBirding/Fields/CommonName=Common Name",
+            dataType = 'string',
+            searchable = true,
+            browsable = true
+        },
+        {
+            id = 'scientificName',
+            title = LOC"$$$/LightroomBirding/Fields/ScientificName=Scientific Name",
+            dataType = 'string',
+            searchable = true,
+            browsable = true
+        },
+        {
             id = 'speciesComments',
             title = LOC"$$$/LightroomBirding/Fields/SpeciesComments=Species Comments",
             dataType = 'string',
-            searchable = false
+            searchable = true
         },
         {
             id = 'speciesCount',
@@ -28,7 +42,7 @@ return {
                 { value = 'Traveling', title = 'Traveling' },
                 { value = 'Area', title = 'Area' }
             },
-            searchable = true
+            searchable = false
         },
         {
             id = 'numberOfObservers',
@@ -65,7 +79,7 @@ return {
             id = 'comments',
             title = LOC"$$$/LightroomBirding/Fields/Comments=Checklist comments",
             dataType = 'string',
-            searchable = false
+            searchable = true
         },
     },
 schemaVersion = 1,

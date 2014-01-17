@@ -1,5 +1,5 @@
 -- http://www.johnrellis.com/lightroom/debugging-toolkit.htm
-local Require = require'Require'.path("../debugscript.lrdevplugin")
+local Require = require 'Require'.reload()
 local Debug = require'Debug'.init()
 require'strict'
 
@@ -78,7 +78,6 @@ local function readStateAndCountryCodes()
             allowedCodes[table[1]] = true
         end
     end
-    Debug.pause(countryMap)
     file:close()
 end
 
@@ -119,13 +118,16 @@ function exportToEbirdLibraryItem.export()
             -- http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications
 
             -- Common Name
-            writeIfNotNil(file, metadata['Common Name'], " ")
+            writeIfNotNil(file, findMeta(metadata, 'commonName'), " ")
 
-            -- Genus
-            writeIfNotNil(file, metadata['Genus'], " ")
-
-            -- Species
-            writeIfNotNil(file, metadata['Species'], " ")
+            local scientificName = findMeta(metadata, 'scientificName')
+            if not isempty(scientificName) then
+                local name = photogenityUtil.split(scientificName, " ", nil)
+                -- Genus
+                writeIfNotNil(file, name[1], " ")
+                -- Species
+                writeIfNotNil(file, name[2], " ")
+            end
 
             -- Species Count
             writeIfNotNil(file, findMeta(metadata, 'speciesCount'), "X")
@@ -165,13 +167,11 @@ function exportToEbirdLibraryItem.export()
             local countryCode
             local countryCodeFromMeta = photo:getFormattedMetadata('isoCountryCode')
             if not isempty(countryCodeFromMeta) then
-                Debug.pause(countryCodeFromMeta)
                 if allowedCodes[countryCodeFromMeta] == nil then
                     logger:warn("Country code " .. countryCodeFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all country codes, using it anyway")
                 end
                 countryCode = countryCodeFromMeta
             elseif not isempty(countryFromMeta) then
-                Debug.pause(countryFromMeta)
                 if countryMap[countryFromMeta] == nil then
                     logger:warn("Country " .. countryFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all countries, can't supply code")
                 else

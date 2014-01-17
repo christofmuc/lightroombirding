@@ -1,4 +1,4 @@
-local photogenityUtil = {}
+photogenityUtil = {}
 
 -- Recursive dump tables
 function photogenityUtil.logDebug(name, value)
