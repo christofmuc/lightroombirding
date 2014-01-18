@@ -1,4 +1,5 @@
 return {
+    VERSION = { display = "20140119" },
     LrSdkVersion = 4.0,
     LrToolkitIdentifier = 'info.alpenglow.lightroomBirding',
     LrPluginName = LOC"$$$/LightroomBirding/PluginName=Lightroom Birding",
@@ -7,6 +8,7 @@ return {
     LrMetadataTagsetFactory = 'MetadataTagset.lua',
     LrInitPlugin = 'PluginInit.lua',
     LrPluginInfoProvider = 'PluginInfoProvider.lua',
+    LrAlsoUseBuiltInTranslations = true,
     LrExportMenuItems = {
         {
             title = LOC"$$$/LightroomBirding/SpeciesFromKeywords=Determine Species from Keywords",
