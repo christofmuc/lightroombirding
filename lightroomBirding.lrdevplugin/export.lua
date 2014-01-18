@@ -8,7 +8,6 @@ local LrTasks = import'LrTasks'
 local LrDate = import'LrDate'
 
 require'alpenglowUtil'
-require'PluginInit'
 
 --
 -- Required to find something in the result of getRawMetadata("customMetadata")
@@ -117,12 +116,12 @@ function exportToEbirdLibraryItem.export()
             local countryCodeFromMeta = photo:getFormattedMetadata('isoCountryCode')
             if not util.isempty(countryCodeFromMeta) then
                 if allowedCodes[countryCodeFromMeta] == nil then
-                    logger:warn("Country code " .. countryCodeFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all country codes, using it anyway")
+                    Debug.logn("Country code " .. countryCodeFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all country codes, using it anyway")
                 end
                 countryCode = countryCodeFromMeta
             elseif not util.isempty(countryFromMeta) then
                 if countryMap[countryFromMeta] == nil then
-                    logger:warn("Country " .. countryFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all countries, can't supply code")
+                    Debug.logn("Country " .. countryFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all countries, can't supply code")
                 else
                     countryCode = countryMap[countryFromMeta]
                 end
