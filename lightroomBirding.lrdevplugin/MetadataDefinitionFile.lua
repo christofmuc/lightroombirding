@@ -49,6 +49,13 @@ return {
             version = 2
         },
         {
+            id = 'allObservations',
+            title = LOC"$$$/LightroomBirding/Fields/AllObservations=All observations reported?",
+            dataType = 'enum',
+            values = { { value = nil, title = "No" }, { value = 'Y', title = 'Yes' }},
+            searchable = false
+        },
+        {
             id = 'numberOfObservers',
             title = LOC"$$$/LightroomBirding/Fields/NumberOfObservers=Number of observers",
             dataType = 'string',
@@ -58,13 +65,6 @@ return {
             id = 'duration',
             title = LOC"$$$/LightroomBirding/Fields/Duration=Duration (minutes)",
             dataType = 'string',
-            searchable = false
-        },
-        {
-            id = 'allObservations',
-            title = LOC"$$$/LightroomBirding/Fields/AllObservations=All observations reported?",
-            dataType = 'enum',
-            values = { { value = nil, title = "No" }, { value = 'Y', title = 'Yes' }},
             searchable = false
         },
         {
