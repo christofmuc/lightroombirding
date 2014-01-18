@@ -15,6 +15,10 @@ return {
         {
             title = LOC"$$$/LightroomBirding/ExportToEbird=Export birding info to eBird",
             file = "export.lua",
-        }
+        },
+        {
+            title = "Debug",
+            file = "DebugScript.lua",
+        },
     },
 }

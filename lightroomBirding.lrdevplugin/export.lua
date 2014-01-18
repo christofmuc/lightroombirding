@@ -14,7 +14,7 @@ local LrDialogs = import"LrDialogs"
 local LrFunctionContext = import"LrFunctionContext"
 local LrView = import"LrView"
 
-local pluginPrefs = import 'LrPrefs'.prefsForPlugin()
+local pluginPrefs = import'LrPrefs'.prefsForPlugin()
 
 require'alpenglowUtil'
 
@@ -96,7 +96,18 @@ function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported
                 util.writeIfNotNil(file, util.findMeta(metadata, 'speciesComments'), " ")
 
                 -- Location Name
-                util.writeIfNotNil(file, photo:getFormattedMetadata('location'), " ")
+                local locName = photo:getFormattedMetadata('location')
+                if util.isempty(locName) then
+                    locName = photo:getFormattedMetadata('city')
+                end
+                if util.isempty(locName) then
+                    locName = photo:getFormattedMetadata('stateProvince')
+                end
+                if util.isempty(locName) then
+                    locName = photo:getFormattedMetadata('country')
+                end
+                util.writeIfNotNil(file, locName, "not specified")
+
 
                 -- Latitude and Longitude
                 local gps = photo:getRawMetadata('gps')
@@ -206,9 +217,11 @@ function exportToEbirdLibraryItem.openDialog()
                     factory:push_button{
                         title = "Browse",
                         action = function()
-                            local saveTo = LrDialogs.runSavePanel({ title = "Select folder and enter file name to create",
+                            local saveTo = LrDialogs.runSavePanel({
+                                title = "Select folder and enter file name to create",
                                 requiredFileType = "csv",
-                                canCreateDirectories = true })
+                                canCreateDirectories = true
+                            })
                             dialogPrefs.exportFileName = saveTo
                         end
                     }
