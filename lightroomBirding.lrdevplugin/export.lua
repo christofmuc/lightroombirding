@@ -72,7 +72,6 @@ function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported
             local metadata = photo:getRawMetadata('customMetadata')
 
             -- Check if it was already exported, and in eventually skip it
-            Debug.pause(util.findMeta(metadata, 'wasExported'))
             if exportAlreadyExported or util.findMeta(metadata, 'wasExported') == nil then
 
                 -- Export our observation in eBird Record Format, see

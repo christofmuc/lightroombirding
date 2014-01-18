@@ -1,10 +1,17 @@
+-- http://www.johnrellis.com/lightroom/debugging-toolkit.htm
+local Require = require'Require'.reload()
+local Debug = require'Debug'.init()
+require'strict'
+
 local LrView = import"LrView"
 local LrHttp = import"LrHttp"
 local bind = import"LrBinding"
 local LrDialogs = import"LrDialogs"
-local LrPathUtils = import 'LrPathUtils'
+local LrPathUtils = import'LrPathUtils'
 
 local pluginPrefs = import'LrPrefs'.prefsForPlugin()
+
+require'KeywordSelectionDialog'
 
 PluginManager = {}
 function PluginManager.sectionsForTopOfDialog(f, p)
@@ -73,10 +80,30 @@ function PluginManager.sectionsForTopOfDialog(f, p)
                     f:push_button{
                         title = "Default",
                         action = function()
-                           pluginPrefs.stateAndCountryCodeTable = LrPathUtils.child (_PLUGIN.path, "State_Country_Codes_10_Nov_2011.csv")
+                            pluginPrefs.stateAndCountryCodeTable = LrPathUtils.child(_PLUGIN.path, "State_Country_Codes_10_Nov_2011.csv")
                         end
                     }
-
+                },
+            },
+            f:column{
+                spacing = f:label_spacing(),
+                fill_horizontal = 1,
+                f:static_text{
+                    title = 'Select the top level bird species element in your catalog: ',
+                    alignment = 'left',
+                },
+                f:row{
+                    f:edit_field{
+                        value = LrView.bind('speciesParentKeyword'),
+                        wraps = false,
+                        fill_horizontal = 1,
+                    },
+                    f:push_button{
+                        title = "Select",
+                        action = function()
+                            getListOfKeywords()
+                        end
+                    },
                 },
             },
             f:static_text{

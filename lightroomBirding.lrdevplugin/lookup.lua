@@ -6,11 +6,12 @@ local LrApplication = import'LrApplication'
 local LrTasks = import'LrTasks'
 local LrDate = import'LrDate'
 
+local pluginPrefs = import 'LrPrefs'.prefsForPlugin()
+
 require'alpenglowUtil'
-require'PluginInit'
 
 function isInBirdNameHierarchy(keyword)
-    if keyword:getName() == "Birds" then
+    if keyword:getName() == pluginPrefs.speciesParentKeyword then
         return true
     elseif not keyword:getParent() then
         return false
@@ -27,7 +28,6 @@ function lookupSpeciesLibraryItem.lookup()
 
         for key, photo in pairs(selected) do
             local keywords = photo:getRawMetadata('keywords')
-            Debug.pause(photo:getRawMetadata('customMetadata'))
             -- Find out if this photo has a keyword that is part of our species hierarchy
             local species = {}
             local n = 1
@@ -35,19 +35,20 @@ function lookupSpeciesLibraryItem.lookup()
                 if next(word:getChildren()) == nil then
                     -- have found leaf node keyword, is it a bird?
                     if isInBirdNameHierarchy(word) then
-                        species[n] = word:getName()
+                        species[n] = word
                         n = n + 1
                     end
                 end
             end
-            Debug.pause(species)
 
             -- If it is, then find out the common and the scientific names of the birds
             local commonNames = ""
             local scientificNames = ""
             for key, s in pairs(species) do
                 catalog:withWriteAccessDo("LightroomBirding copying species information", Debug.showErrors(function(context)
-                    photo:setPropertyForPlugin(_PLUGIN, "commonName", s)
+                    photo:setPropertyForPlugin(_PLUGIN, "commonName", s:getName())
+                    local synonyms = s:getSynonyms();
+                    photo:setPropertyForPlugin(_PLUGIN, "scientificName", synonyms[1] )
                 end))
             end
         end
