@@ -153,6 +153,11 @@ function exportToEbirdLibraryItem.export()
             end
 
             file:write("\n")
+
+            -- Mark this bird as exported
+            catalog:withWriteAccessDo("Mark birds as exported", Debug.showErrors(function(context)
+                            photo:setPropertyForPlugin(_PLUGIN, "wasExported", "Y")
+            end))
         end
 
         file:close()

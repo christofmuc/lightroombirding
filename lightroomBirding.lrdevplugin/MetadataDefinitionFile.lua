@@ -86,6 +86,13 @@ return {
             searchable = true,
             version = 2
         },
+        {
+            id = 'wasExported',
+            title = LOC"$$$/LightroomBirding/Fields/AlreadyOnEbird=Already on eBird",
+            dataType = 'enum',
+            values = { { value = nil, title = "No" }, { value = 'Y', title = 'Yes' }},
+            searchable = false,
+        },
     },
 schemaVersion = 1,
 }
