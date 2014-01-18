@@ -66,6 +66,7 @@ function PluginManager.sectionsForTopOfDialog(f, p)
                             })
                             if stateTable then
                                 pluginPrefs.stateAndCountryCodeTable = stateTable[1]
+                                pluginPrefs.lastDirectory = LrPathUtils.parent(stateTable[1])
                             end
                         end
                     },
