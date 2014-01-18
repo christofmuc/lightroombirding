@@ -3,14 +3,18 @@ local Require = require'Require'.reload()
 local Debug = require'Debug'.init()
 require'strict'
 
+-- Required for the export function
 local LrApplication = import'LrApplication'
 local LrTasks = import'LrTasks'
 local LrDate = import'LrDate'
 
+-- Required for the UI
 local LrBinding = import"LrBinding"
 local LrDialogs = import"LrDialogs"
 local LrFunctionContext = import"LrFunctionContext"
 local LrView = import"LrView"
+
+local prefs = import 'LrPrefs'.prefsForPlugin()
 
 require'alpenglowUtil'
 
@@ -68,7 +72,8 @@ function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported
             local metadata = photo:getRawMetadata('customMetadata')
 
             -- Check if it was already exported, and in eventually skip it
-            if exportAlreadyExported or util.findMeta(metadata, 'wasExported') == "Yes" then
+            Debug.pause(util.findMeta(metadata, 'wasExported'))
+            if exportAlreadyExported or util.findMeta(metadata, 'wasExported') == nil then
 
                 -- Export our observation in eBird Record Format, see
                 -- http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications
@@ -182,9 +187,9 @@ function exportToEbirdLibraryItem.openDialog()
     LrFunctionContext.callWithContext('exportToEbirdDialog', function(context)
         local factory = LrView.osFactory()
         local properties = LrBinding.makePropertyTable(context)
-        properties.exportFileName = "ebird_sightings.csv"
-        properties.exportAlreadyExported = "No"
-        properties.markAsExported = "Yes"
+        properties.exportFileName = prefs.exportFileName
+        properties.exportAlreadyExported = prefs.exportAlreadyExported
+        properties.markAsExported = prefs.markAsExported
         local dialogUI = factory:column{
             spacing = factory:control_spacing(),
             bind_to_object = properties,
@@ -229,6 +234,12 @@ function exportToEbirdLibraryItem.openDialog()
             actionVerb = "Export",
         })
         if result == 'ok' then
+            -- Persist choices
+            prefs.exportFileName = properties.exportFileName
+            prefs.exportAlreadyExported = properties.exportAlreadyExported
+            prefs.markAsExported = properties.markAsExported
+
+            -- Perform action
             exportToEbirdLibraryItem.export(properties.exportFileName,
                 properties.exportAlreadyExported == "Yes",
                 properties.markAsExported == "Yes")
