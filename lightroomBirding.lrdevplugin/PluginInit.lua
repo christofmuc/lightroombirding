@@ -1,10 +1,7 @@
-local LrLogger = import'LrLogger'
-
--- Define myLogger globally
-logger = LrLogger('g:/photogenity/home/LightroomBirdingPlugin/lightroomBirding.log') -- the log file name.
-logger:enable("logfile")
+local LrPathUtils = import 'LrPathUtils'
 
 local properties = import 'LrPrefs'.prefsForPlugin()
 properties.exportFileName = "new_ebird_sightings.csv"
 properties.exportAlreadyExported = "No"
 properties.markAsExported = "Yes"
+properties.stateAndCountryCodeTable = LrPathUtils.child (_PLUGIN.path, "State_Country_Codes_10_Nov_2011.csv")

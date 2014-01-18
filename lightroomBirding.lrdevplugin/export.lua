@@ -14,7 +14,7 @@ local LrDialogs = import"LrDialogs"
 local LrFunctionContext = import"LrFunctionContext"
 local LrView = import"LrView"
 
-local prefs = import 'LrPrefs'.prefsForPlugin()
+local pluginPrefs = import 'LrPrefs'.prefsForPlugin()
 
 require'alpenglowUtil'
 
@@ -31,7 +31,7 @@ local countryMap = {}
 local allowedCodes = {}
 
 local function readStateAndCountryCodes()
-    local file = assert(io.open("g:/photogenity/home/LightroomBirdingPlugin/State_Country_Codes_10_Nov_2011.csv", "r"))
+    local file = assert(io.open(pluginPrefs.stateAndCountryCodeTable, "r"))
     for line in file:lines() do
         local table = util.fromCSV(line)
         if table[4] == "State" then
@@ -186,13 +186,13 @@ end
 function exportToEbirdLibraryItem.openDialog()
     LrFunctionContext.callWithContext('exportToEbirdDialog', function(context)
         local factory = LrView.osFactory()
-        local properties = LrBinding.makePropertyTable(context)
-        properties.exportFileName = prefs.exportFileName
-        properties.exportAlreadyExported = prefs.exportAlreadyExported
-        properties.markAsExported = prefs.markAsExported
+        local dialogPrefs = LrBinding.makePropertyTable(context)
+        dialogPrefs.exportFileName = pluginPrefs.exportFileName
+        dialogPrefs.exportAlreadyExported = pluginPrefs.exportAlreadyExported
+        dialogPrefs.markAsExported = pluginPrefs.markAsExported
         local dialogUI = factory:column{
             spacing = factory:control_spacing(),
-            bind_to_object = properties,
+            bind_to_object = dialogPrefs,
             factory:column{
                 spacing = factory:label_spacing(),
                 factory:static_text{
@@ -210,7 +210,7 @@ function exportToEbirdLibraryItem.openDialog()
                             local saveTo = LrDialogs.runSavePanel({ title = "Select folder and enter file name to create",
                                 requiredFileType = "csv",
                                 canCreateDirectories = true })
-                            properties.exportFileName = saveTo
+                            dialogPrefs.exportFileName = saveTo
                         end
                     }
                 }
@@ -235,14 +235,14 @@ function exportToEbirdLibraryItem.openDialog()
         })
         if result == 'ok' then
             -- Persist choices
-            prefs.exportFileName = properties.exportFileName
-            prefs.exportAlreadyExported = properties.exportAlreadyExported
-            prefs.markAsExported = properties.markAsExported
+            pluginPrefs.exportFileName = dialogPrefs.exportFileName
+            pluginPrefs.exportAlreadyExported = dialogPrefs.exportAlreadyExported
+            pluginPrefs.markAsExported = dialogPrefs.markAsExported
 
             -- Perform action
-            exportToEbirdLibraryItem.export(properties.exportFileName,
-                properties.exportAlreadyExported == "Yes",
-                properties.markAsExported == "Yes")
+            exportToEbirdLibraryItem.export(dialogPrefs.exportFileName,
+                dialogPrefs.exportAlreadyExported == "Yes",
+                dialogPrefs.markAsExported == "Yes")
         end
     end)
 end
