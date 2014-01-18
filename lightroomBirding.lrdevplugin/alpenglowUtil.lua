@@ -1,16 +1,5 @@
 util = {}
 
--- Recursive dump tables
-function util.logDebug(name, value)
-    if type(value) == 'table' then
-        for key, row in pairs(value) do
-            util.logDebug(name.."/"..key, row)
-        end
-    else
-        logger:debug(name, value)
-    end
-end
-
 -- Compatibility: Lua-5.0 (from http://lua-users.org/wiki/SplitJoin)
 function util.split(str, delim, maxNb)
     -- Eliminate bad cases...
@@ -110,4 +99,3 @@ function util.fromCSV(s)
         until fieldstart > string.len(s)
     return t
 end
-
