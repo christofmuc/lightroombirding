@@ -189,7 +189,7 @@ function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported
         end
 
         file:close()
-        LrDialogs.message("Birding information exported for " .. totalExportedItems .. " sightings")
+        LrDialogs.message("Birding information exported for " .. totalExportedItems .. " observation(s)")
     end))
 end
 

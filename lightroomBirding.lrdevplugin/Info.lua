@@ -1,5 +1,5 @@
 return {
-    VERSION = { display = "20140119" },
+    VERSION = { display = "20140120" },
     LrSdkVersion = 4.0,
     LrToolkitIdentifier = 'info.alpenglow.lightroomBirding',
     LrPluginName = LOC"$$$/LightroomBirding/PluginName=Lightroom Birding",
@@ -18,9 +18,11 @@ return {
             title = LOC"$$$/LightroomBirding/ExportToEbird=Export birding info to eBird",
             file = "export.lua",
         },
+-- #ifndef DISTRIBUTE_DEBUG
         {
             title = "Debug",
             file = "DebugScript.lua",
         },
+-- #endif
     },
 }
