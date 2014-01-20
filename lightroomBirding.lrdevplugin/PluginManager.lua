@@ -80,7 +80,7 @@ function PluginManager.sectionsForTopOfDialog(f, p)
                     f:push_button{
                         title = "Default",
                         action = function()
-                            pluginPrefs.stateAndCountryCodeTable = LrPathUtils.child(_PLUGIN.path, "State_Country_Codes_10_Nov_2011.csv")
+                            pluginPrefs.stateAndCountryCodeTable = LrPathUtils.child(_PLUGIN.path, "StateCountryCodes.csv")
                         end
                     }
                 },

@@ -11,6 +11,6 @@ end
 initIfEmpty("exportFileName", "new_ebird_sightings.csv")
 initIfEmpty("exportAlreadyExported", "No")
 initIfEmpty("markAsExported", "Yes")
-initIfEmpty("stateAndCountryCodeTable", LrPathUtils.child (_PLUGIN.path, "State_Country_Codes_10_Nov_2011.csv"))
+initIfEmpty("stateAndCountryCodeTable", LrPathUtils.child (_PLUGIN.path, "StateCountryCodes.csv"))
 initIfEmpty("lastDirectory", _PLUGIN.path)
 initIfEmpty("speciesParentKeyword", "Birds")
