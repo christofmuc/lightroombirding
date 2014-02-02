@@ -1,5 +1,5 @@
 return {
-    VERSION = { display = "20140120" },
+    VERSION = { display = "20140202" },
     LrSdkVersion = 4.0,
     LrToolkitIdentifier = 'info.alpenglow.lightroomBirding',
     LrPluginName = LOC"$$$/LightroomBirding/PluginName=Lightroom Birding",
