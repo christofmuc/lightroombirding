@@ -58,7 +58,7 @@ end
 --
 
 local exportToEbirdLibraryItem = {}
-function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported, markAsExported)
+function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported, markAsExported, writeFileNames)
     LrTasks.startAsyncTask(Debug.showErrors(function(context)
         local catalog = LrApplication.activeCatalog()
         local selected = catalog:getTargetPhotos()
@@ -74,110 +74,131 @@ function exportToEbirdLibraryItem.export(exportedFileName, exportAlreadyExported
             -- Check if it was already exported, and in eventually skip it
             if exportAlreadyExported or util.findMeta(metadata, 'wasExported') == nil then
 
+                -- We might have a comma separated list of all species
+                local allSpecies = util.split(util.findMeta(metadata, "commonName"), ",")
+                local allScientific = util.split(util.findMeta(metadata, "scientificName"), ",")
+
                 -- Export our observation in eBird Record Format, see
                 -- http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications
 
-                -- Common Name
-                util.writeIfNotNil(file, util.findMeta(metadata, 'commonName'), " ")
+                for key, commonName in ipairs(allSpecies) do
+                    -- Common Name
+                    util.writeIfNotNil(file, util.trim(commonName), "error")
 
-                local scientificName = util.findMeta(metadata, 'scientificName')
-                if not util.isempty(scientificName) then
-                    local name = util.split(scientificName, " ", nil)
+                    local genus = ""
+                    local species = ""
+                    if allScientific ~= nil then
+                        local scientificName = allScientific[key]
+                        if not util.isempty(scientificName) then
+                            local name = util.split(util.trim(scientificName), " ", nil)
+                            genus = name[1]
+                            species = name[2]
+                        end
+                    end
+
                     -- Genus
-                    util.writeIfNotNil(file, name[1], " ")
+                    util.writeIfNotNil(file, genus, " ")
                     -- Species
-                    util.writeIfNotNil(file, name[2], " ")
-                end
+                    util.writeIfNotNil(file, species, " ")
 
-                -- Species Count
-                util.writeIfNotNil(file, util.findMeta(metadata, 'speciesCount'), "X")
+                    -- Species Count
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'speciesCount'), "X")
 
-                -- Species Comments
-                util.writeIfNotNil(file, util.findMeta(metadata, 'speciesComments'), " ")
-
-                -- Location Name
-                local locName = photo:getFormattedMetadata('location')
-                if util.isempty(locName) then
-                    locName = photo:getFormattedMetadata('city')
-                end
-                if util.isempty(locName) then
-                    locName = photo:getFormattedMetadata('stateProvince')
-                end
-                if util.isempty(locName) then
-                    locName = photo:getFormattedMetadata('country')
-                end
-                util.writeIfNotNil(file, locName, "not specified")
-
-
-                -- Latitude and Longitude
-                local gps = photo:getRawMetadata('gps')
-                if gps ~= nil then
-                    util.writeIfNotNil(file, gps.latitude, " ")
-                    util.writeIfNotNil(file, gps.longitude, " ")
-                else
-                    file:write(" , ,")
-                end
-
-                -- Observation Date
-                local dateTime = photo:getRawMetadata('dateTime')
-                util.writeIfNotNil(file, LrDate.timeToUserFormat(dateTime, '%m/%d/%Y'), " ")
-
-                -- Observation Start Time
-                util.writeIfNotNil(file, util.findMeta(metadata, 'startTime'), " ")
-
-                -- State and Country have to match specific codes
-                local stateFromMeta = photo:getFormattedMetadata('stateProvince')
-                local countryFromMeta = photo:getFormattedMetadata('country')
-                local state
-                if stateMap[countryFromMeta] then
-                    state = stateMap[countryFromMeta][stateFromMeta]
-                end
-                util.writeIfNotNil(file, state, " ")
-
-                -- Country
-                local countryCode
-                local countryCodeFromMeta = photo:getFormattedMetadata('isoCountryCode')
-                if not util.isempty(countryCodeFromMeta) then
-                    if allowedCodes[countryCodeFromMeta] == nil then
-                        Debug.logn("Country code " .. countryCodeFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all country codes, using it anyway")
+                    -- Species Comments
+                    local comments = util.findMeta(metadata, 'speciesComments')
+                    if writeFileNames then
+                        if not util.isempty(comments) then
+                            comments = comments + ' (' + photo:getFormattedMetadata('fileName') + ')'
+                        else
+                            comments = photo:getFormattedMetadata('fileName')
+                        end
                     end
-                    countryCode = countryCodeFromMeta
-                elseif not util.isempty(countryFromMeta) then
-                    if countryMap[countryFromMeta] == nil then
-                        Debug.logn("Country " .. countryFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all countries, can't supply code")
+                    util.writeIfNotNil(file, comments, " ")
+
+                    -- Location Name
+                    local locName = photo:getFormattedMetadata('location')
+                    if util.isempty(locName) then
+                        locName = photo:getFormattedMetadata('city')
+                    end
+                    if util.isempty(locName) then
+                        locName = photo:getFormattedMetadata('stateProvince')
+                    end
+                    if util.isempty(locName) then
+                        locName = photo:getFormattedMetadata('country')
+                    end
+                    util.writeIfNotNil(file, locName, "unspecified country")
+
+
+                    -- Latitude and Longitude
+                    local gps = photo:getRawMetadata('gps')
+                    if gps ~= nil then
+                        util.writeIfNotNil(file, string.format("%.6f", gps.latitude), " ")
+                        util.writeIfNotNil(file, string.format("%.6f", gps.longitude), " ")
                     else
-                        countryCode = countryMap[countryFromMeta]
+                        file:write(" , ,")
                     end
+
+                    -- Observation Date
+                    local dateTime = photo:getRawMetadata('dateTime')
+                    util.writeIfNotNil(file, LrDate.timeToUserFormat(dateTime, '%m/%d/%Y'), " ")
+
+                    -- Observation Start Time
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'startTime'), " ")
+
+                    -- State and Country have to match specific codes
+                    local stateFromMeta = photo:getFormattedMetadata('stateProvince')
+                    local countryFromMeta = photo:getFormattedMetadata('country')
+                    local state
+                    if stateMap[countryFromMeta] then
+                        state = stateMap[countryFromMeta][stateFromMeta]
+                    end
+                    util.writeIfNotNil(file, state, " ")
+
+                    -- Country
+                    local countryCode
+                    local countryCodeFromMeta = photo:getFormattedMetadata('isoCountryCode')
+                    if not util.isempty(countryCodeFromMeta) then
+                        if allowedCodes[countryCodeFromMeta] == nil then
+                            Debug.logn("Country code " .. countryCodeFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all country codes, using it anyway")
+                        end
+                        countryCode = countryCodeFromMeta
+                    elseif not util.isempty(countryFromMeta) then
+                        if countryMap[countryFromMeta] == nil then
+                            Debug.logn("Country " .. countryFromMeta .. " of photo " .. photo:getFormattedMetadata("fileName") .. " is not in the list of all countries, can't supply code")
+                        else
+                            countryCode = countryMap[countryFromMeta]
+                        end
+                    end
+                    util.writeIfNotNil(file, countryCode, " ")
+
+                    -- Protocol
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'protocol'), "Casual")
+
+                    -- Number of Observers
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'numberOfObservers'), " ")
+
+                    -- Duration
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'duration'), " ")
+
+                    -- All Observations Reported?
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'allObservations'), "N")
+
+                    -- Distance Covered
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'distance'), " ")
+
+                    -- Area Covered
+                    util.writeIfNotNil(file, util.findMeta(metadata, 'area'), " ")
+
+                    -- Checklist Comments
+                    local comment = util.findMeta(metadata, 'comments')
+                    if comment ~= nil then
+                        file:write(comment)
+                    end
+
+                    file:write("\n")
+
+                    totalExportedItems = totalExportedItems + 1
                 end
-                util.writeIfNotNil(file, countryCode, " ")
-
-                -- Protocol
-                util.writeIfNotNil(file, util.findMeta(metadata, 'protocol'), "Casual")
-
-                -- Number of Observers
-                util.writeIfNotNil(file, util.findMeta(metadata, 'numberOfObservers'), " ")
-
-                -- Duration
-                util.writeIfNotNil(file, util.findMeta(metadata, 'duration'), " ")
-
-                -- All Observations Reported?
-                util.writeIfNotNil(file, util.findMeta(metadata, 'allObservations'), "N")
-
-                -- Distance Covered
-                util.writeIfNotNil(file, util.findMeta(metadata, 'distance'), " ")
-
-                -- Area Covered
-                util.writeIfNotNil(file, util.findMeta(metadata, 'area'), " ")
-
-                -- Checklist Comments
-                local comment = util.findMeta(metadata, 'comments')
-                if comment ~= nil then
-                    file:write(comment)
-                end
-
-                file:write("\n")
-
-                totalExportedItems = totalExportedItems + 1
 
                 if markAsExported then
                     -- Mark this bird as exported
@@ -200,6 +221,7 @@ function exportToEbirdLibraryItem.openDialog()
         dialogPrefs.exportFileName = pluginPrefs.exportFileName
         dialogPrefs.exportAlreadyExported = pluginPrefs.exportAlreadyExported
         dialogPrefs.markAsExported = pluginPrefs.markAsExported
+        dialogPrefs.writeFileName = "Yes"
         local dialogUI = factory:column{
             spacing = factory:control_spacing(),
             bind_to_object = dialogPrefs,
@@ -239,6 +261,12 @@ function exportToEbirdLibraryItem.openDialog()
                 checked_value = 'Yes',
                 unchecked_value = 'No',
             },
+            factory:checkbox{
+                title = "Write filename into species' comment",
+                value = LrView.bind('writeFileName'),
+                checked_value = 'Yes',
+                unchecked_value = 'No',
+            },
         }
         local result = LrDialogs.presentModalDialog({
             title = LOC"$$$/LightroomBirding/ExportToEbird=Export birding info to eBird",
@@ -254,7 +282,8 @@ function exportToEbirdLibraryItem.openDialog()
             -- Perform action
             exportToEbirdLibraryItem.export(dialogPrefs.exportFileName,
                 dialogPrefs.exportAlreadyExported == "Yes",
-                dialogPrefs.markAsExported == "Yes")
+                dialogPrefs.markAsExported == "Yes",
+                dialogPrefs.writeFileName == "Yes")
         end
     end)
 end

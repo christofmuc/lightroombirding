@@ -1,7 +1,16 @@
 util = {}
 
+-- http://lua-users.org/wiki/StringTrim
+function util.trim(s)
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 -- Compatibility: Lua-5.0 (from http://lua-users.org/wiki/SplitJoin)
 function util.split(str, delim, maxNb)
+    if str == nil then
+        return nil
+    end
+
     -- Eliminate bad cases...
     if string.find(str, delim) == nil then
         return { str }
@@ -98,4 +107,13 @@ function util.fromCSV(s)
         end
         until fieldstart > string.len(s)
     return t
+end
+
+-- http://stackoverflow.com/questions/1405583/concatenation-of-strings-in-lua
+function util.concat(s, delim)
+    local t = {}
+    for k,v in ipairs(s) do
+        t[#t+1] = tostring(v)
+    end
+    return table.concat(t, delim)
 end
